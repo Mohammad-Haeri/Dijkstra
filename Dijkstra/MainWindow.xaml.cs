@@ -57,11 +57,11 @@ namespace Dijkstra
             //_priorityQueue.Add("A", Tuple.Create(0, ""));
             //_priorityQueue.Add("B", null);
 
-            foreach (string vertice in _verticeList)
+            foreach (string vertex in _verticeList)
             {
-                _weightedVerticesList.Add(vertice, new Dictionary<string, IDictionary<bool, int?>>());
+                _weightedVerticesList.Add(vertex, new Dictionary<string, IDictionary<bool, int?>>());
 
-                _visitedList.Add(vertice, Tuple.Create(false));
+                _visitedList.Add(vertex, Tuple.Create(false));
             }
 
 
@@ -239,23 +239,23 @@ namespace Dijkstra
         }
 
         /// <summary>
-        /// Show the shortest path to destination vertice in Show Result TextBlock
+        /// Show the shortest path to destination vertex in Show Result TextBlock
         /// </summary>
         private void ShowCalculation(string inceptionVertice, string destinationVertice)
         {
             List<string> routes = [];
-            string currentVertice = destinationVertice;
+            string currentVertex = destinationVertice;
 
-            while (currentVertice != inceptionVertice)
+            while (currentVertex != inceptionVertice)
             {
-                if (!_heap.ContainsKey(currentVertice))
+                if (!_heap.ContainsKey(currentVertex))
                 {
                     ShowResultTextBlock.Foreground = new SolidColorBrush(Colors.Red);
                     ShowResultTextBlock.Text = $"No way from {inceptionVertice} to {destinationVertice}";
                     return;
                 }
-                routes.Add(_heap[currentVertice].Item2);
-                currentVertice = _heap[currentVertice].Item2;
+                routes.Add(_heap[currentVertex].Item2);
+                currentVertex = _heap[currentVertex].Item2;
             }
 
             string path = "";
@@ -274,15 +274,15 @@ namespace Dijkstra
         /// <summary>
         /// Calculate shortest path to all edges from inception point base on dijkstra algorithm
         /// </summary>
-        /// <param name="inceptionVertice">Inception edge name</param>
-        private void DijkstraAlgorithm(string? inceptionVertice)
+        /// <param name="inceptionVertex">Inception edge name</param>
+        private void DijkstraAlgorithm(string? inceptionVertex)
         {
-            if (inceptionVertice is null)
+            if (inceptionVertex is null)
             {
                 return;
             }
 
-            int currentVisitingVerticeTotalDistanceToInceptionVertice = 0;
+            int currentVisitingVertexTotalDistanceToInceptionVertex = 0;
 
             // clearing heap for new calculation
             _heap.Clear();
@@ -290,7 +290,7 @@ namespace Dijkstra
             // Make all vertices unvisited except inception vertice
             foreach (var key in _visitedList.Keys)
             {
-                if (key.Equals(inceptionVertice))
+                if (key.Equals(inceptionVertex))
                 {
                     _visitedList[key] = Tuple.Create(true);
                 }
@@ -302,45 +302,45 @@ namespace Dijkstra
             }
 
             // Initiaizig inception vertice
-            _heap.Add(inceptionVertice, Tuple.Create(0, inceptionVertice));
+            _heap.Add(inceptionVertex, Tuple.Create(0, inceptionVertex));
 
-            string currentVertice = inceptionVertice;
+            string currentVertex = inceptionVertex;
 
-            /// Started from 1 because the last vertice is not calculateable since all other vertices became visted
+            /// Started from 1 because the last vertex is not calculateable since all other vertices became visted
             for (int i = 1; i < _verticeList.Count; i++)
             {
-                if (!_weightedVerticesList.ContainsKey(currentVertice))
+                if (!_weightedVerticesList.ContainsKey(currentVertex))
                 {
                     continue;
                 }
 
-                //Grabbing every availbe neighbour of current visiting vertice
-                foreach (var vertice in _weightedVerticesList[currentVertice].Keys)
+                //Grabbing every availbe neighbour of current visiting vertex
+                foreach (var vertex in _weightedVerticesList[currentVertex].Keys)
                 {
-                    // Make sure neighbour vertice is not null and visited status is false
-                    if (vertice is not null && _visitedList[vertice].Item1.Equals(false))
+                    // Make sure neighbour vertex is not null and visited status is false
+                    if (vertex is not null && _visitedList[vertex].Item1.Equals(false))
                     {
-                        foreach (var item in _weightedVerticesList[currentVertice][vertice])
+                        foreach (var item in _weightedVerticesList[currentVertex][vertex])
                         {
                             // Check if route is available(currently such an option did not implemented, but infrastructure existed is UI)
                             if (item.Key.Equals(true))
                             {
                                 int calculated = 0;
                                 // If existed comapre it
-                                if (_heap.ContainsKey(vertice))
+                                if (_heap.ContainsKey(vertex))
                                 {
 
-                                    calculated = item.Value.GetValueOrDefault() + currentVisitingVerticeTotalDistanceToInceptionVertice;
-                                    if (calculated < _heap[vertice].Item1)
+                                    calculated = item.Value.GetValueOrDefault() + currentVisitingVertexTotalDistanceToInceptionVertex;
+                                    if (calculated < _heap[vertex].Item1)
                                     {
-                                        _heap[vertice] = Tuple.Create(calculated, currentVertice);
+                                        _heap[vertex] = Tuple.Create(calculated, currentVertex);
                                     }
                                 }
                                 // Else add to heap
                                 else
                                 {
-                                    calculated = item.Value.GetValueOrDefault() + currentVisitingVerticeTotalDistanceToInceptionVertice;
-                                    _heap.Add(vertice, Tuple.Create(calculated, currentVertice));
+                                    calculated = item.Value.GetValueOrDefault() + currentVisitingVertexTotalDistanceToInceptionVertex;
+                                    _heap.Add(vertex, Tuple.Create(calculated, currentVertex));
                                 }
                             }
                         }
@@ -348,8 +348,8 @@ namespace Dijkstra
                 }// end weited
 
 
-                (currentVertice, currentVisitingVerticeTotalDistanceToInceptionVertice) = FindMinimum(_heap);
-                _visitedList[currentVertice] = Tuple.Create(true);
+                (currentVertex, currentVisitingVertexTotalDistanceToInceptionVertex) = FindMinimum(_heap);
+                _visitedList[currentVertex] = Tuple.Create(true);
 
             }
         }
@@ -363,21 +363,21 @@ namespace Dijkstra
         private static (string, int) FindMinimum(Dictionary<string, Tuple<int, string>> neighbourVertice)
         {
             int minValue = int.MaxValue;
-            string selectedVertice = "";
+            string selectedVertex = "";
 
-            foreach (var vertice in neighbourVertice)
+            foreach (var vertex in neighbourVertice)
             {
                 // null here means 0 which mean shortest path
-                if (vertice.Value is not null && !vertice.Value.Item1.Equals(0) && _visitedList[vertice.Key].Item1.Equals(false))
+                if (vertex.Value is not null && !vertex.Value.Item1.Equals(0) && _visitedList[vertex.Key].Item1.Equals(false))
                 {
-                    if ((vertice.Value.Item1) < minValue)
+                    if ((vertex.Value.Item1) < minValue)
                     {
-                        minValue = vertice.Value.Item1;
-                        selectedVertice = vertice.Key;
+                        minValue = vertex.Value.Item1;
+                        selectedVertex = vertex.Key;
                     }
                 }
             }
-            return (selectedVertice, minValue);
+            return (selectedVertex, minValue);
         }
 
         //----------------------------------------------------------------------------------------------------------------------------\\
